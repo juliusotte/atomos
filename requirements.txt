@@ -1,0 +1,14 @@
+# app
+sqlalchemy
+psycopg2-binary
+redis
+grpcio
+grpcio-tools
+
+# dev/tests
+pytest
+pytest-icdiff
+mypy
+pylint
+requests
+tenacity
