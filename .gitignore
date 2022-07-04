@@ -1,0 +1,8 @@
+# JetBrains IDE
+.idea
+
+# Python
+__pycache__
+
+# Exclude environment variables configuration file from source control to prevent unintended publishing
+.env
