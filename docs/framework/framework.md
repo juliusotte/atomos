@@ -17,6 +17,7 @@ Besides the [system architecture](../architecture/architecture.md), the framewor
 components that act as the building blocks to create microservices.
 
 ### Adapters
+
 #### Repository
 > Repositories are classes or components that encapsulate the logic required to access data sources. They centralize
 > common data access functionality, providing better maintainability and decoupling the infrastructure or technology
@@ -156,6 +157,92 @@ class SQLAlchemyUserRepository(
         if result:
             self.session.delete(result)
 ```
+
+### Service Layer
+
+#### Unit of Work (UOW)
+A unit of work (UOW) defines an abstraction around an atomic update to the data layer (in particular the a repository
+adapter in this architecture). The UOW enforces data integrity and consistency by monitoring the execution of state
+changes, comitting the updates in case of success, or rolling back in case of failure.
+
+The framework provides generic abstractions for the UOW that act as the building blocks to create custom UOW
+implementations:
+
+`atomos/core/service/uow/unit_of_work.py`
+```python
+T = TypeVar('T', bound=repository.Repository)
+
+class UnitOfWork(Generic[T], contextlib.AbstractAsyncContextManager, abc.ABC):
+    repository: T
+
+    async def __aenter__(self) -> UnitOfWork:
+        return self
+
+    async def __aexit__(self, *args):
+        await self.rollback()
+
+    async def commit(self):
+        await self._commit()
+
+    async def rollback(self):
+        await self._rollback()
+
+    def collect_new_events(self):
+        for entity in self.repository.collected_entities:
+            while entity.events:
+                yield entity.events.pop(0)
+
+    @abc.abstractmethod
+    async def _commit(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def _rollback(self):
+        raise NotImplementedError
+```
+
+`atomos/core/service/uow/sqlalchemy_unit_of_work.py`
+```python
+SessionFactory = Callable[..., Session]
+
+T = TypeVar('T', bound=sqlalchemy_repository.SQLAlchemyRepository)
+
+
+class SQLAlchemyUnitOfWork(Generic[T], unit_of_work.UnitOfWork[T]):
+    def __init__(
+        self,
+        repository_factory: Type[sqlalchemy_repository.SQLAlchemyRepository],
+        session_factory: SessionFactory = factory.DEFAULT_SESSION_FACTORY,
+    ):
+        self.repository_factory: Type[sqlalchemy_repository.SQLAlchemyRepository] = repository_factory
+        self.session_factory: SessionFactory = session_factory
+
+    async def __aenter__(self):
+        self.session: Session = self.session_factory()
+        self.repository: T = self.repository_factory(self.session)
+        return await super().__aenter__()
+
+    async def __aexit__(self, *args):
+        await super().__aexit__(*args)
+        self.session.close()
+
+    async def _commit(self):
+        self.session.commit()
+
+    async def _rollback(self):
+        self.session.rollback()
+```
+
+The generic design of the UOW bases enables to easily create custom UOW implementations: 
+
+```python
+class SQLAlchemyUserUnitOfWork(
+    sqlalchemy_unit_of_work.SQLAlchemyUnitOfWork[sqlalchemy_repository.SQLAlchemyUserRepository],
+):
+    def __init__(self, session_factory: sqlalchemy_unit_of_work.SessionFactory = factory.DEFAULT_SESSION_FACTORY):
+        super().__init__(sqlalchemy_repository.SQLAlchemyUserRepository, session_factory)
+```
+
 
 ## References
 - [Software framework (Wikipedia)](https://en.wikipedia.org/wiki/Software_framework)
