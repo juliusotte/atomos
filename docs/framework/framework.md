@@ -16,6 +16,76 @@ that act as building blocks to develop performant, secure, resilient, distribute
 Besides the [system architecture](../architecture/architecture.md), the framework provides a variety of system
 components that act as the building blocks to create microservices.
 
+## Domain
+> A sphere of knowledge, influence, or activity. The subject area to which the user applies a program is the domain of
+> the software. (Eric Evans)
+
+The domain contains **models**, **events**, and **commands** that in conjunction abstract the reality or fictional
+entities. **Domain engineering / modeling** refers to the process of abstracting real-world entities to digital
+domain entities.
+
+The framework provides abstract bases for custom models, events, and commands:
+
+`atomos/core/domain/events/event.py`
+```python
+@dataclass
+class Event:
+    pass
+```
+
+```python
+@dataclass
+class UserCreated(event.Event):
+    username: Optional[str]
+    email: Optional[str]
+    roles: Optional[List[role.Role]] = field(default_factory=lambda: [])
+```
+
+`atomos/core/domain/commands/command.py`
+```python
+@dataclass
+class Command:
+    pass
+```
+
+```python
+@dataclass
+class CreateUser(command.Command):
+    username: str
+    password: str
+    email: str
+    roles: Optional[List[role.Role]] = field(default_factory=lambda: [])
+```
+
+`atomos/core/domain/model/model.py`
+```python
+class EventQueue(abc.ABC):
+    events: Optional[List[event.Event]] = []
+
+
+class Model(EventQueue):
+    id: Optional[str] = str(uuid4())
+```
+The `Model` base inherits the abstract base class `EventQueue`, which optionally stores a list of events. This allows
+the service layer's message bus (`atomos/core/service/bus/message_bus.py`) to dynamically monitor newly triggered events
+that relate to the model.
+
+```python
+@dataclass
+class User(model.Model):
+    username: str
+    password: Optional[str] = None
+    email: Optional[str] = None
+    roles: Optional[List[role.Role]] = field(default_factory=lambda: [])
+    id: Optional[uuid.UUID] = uuid.uuid4()
+
+    def __hash__(self):
+        return hash(self.username)
+
+    def __eq__(self, other):
+        return isinstance(other, User) and self.id is other.id
+```
+
 ### Adapters
 
 #### Repository
@@ -247,3 +317,4 @@ class SQLAlchemyUserUnitOfWork(
 ## References
 - [Software framework (Wikipedia)](https://en.wikipedia.org/wiki/Software_framework)
 - [Design the infrastructure persistence layer (Microsoft)](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design)
+- [Domain (software engineering) (Wikipedia)](https://en.wikipedia.org/wiki/Domain_(software_engineering))
