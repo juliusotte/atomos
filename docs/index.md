@@ -1,17 +1,10 @@
-# atomos | Framework Documentation
+# **atomos** | Framework
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+**atomos** is an **event-driven microservice framework** that provides the fundamental **building blocks** to create
+**scalable**, **secure**, and **resilient** systems.
 
-## Commands
+## Documentation
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
-
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+### [Architecture](architecture/architecture.md)
+### [Framework](framework/framework.md)
+### [Quickstart](quickstart/quickstart.md)
