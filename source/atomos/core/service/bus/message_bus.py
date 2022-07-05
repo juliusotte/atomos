@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 from typing import Callable, Dict, List, Union, Type, Awaitable
 
-from atomos.service.uow import unit_of_work
+from atomos.core.service.uow import unit_of_work
 from atomos.core.domain.events import event
 from atomos.core.domain.commands import command
 
