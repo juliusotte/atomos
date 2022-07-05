@@ -1,7 +1,7 @@
 from string import Template
 from pathlib import Path
 
-from atomos import config
+from atomos.core import config
 
 
 def template(content: str, label: str = config.APP_NAME) -> str:

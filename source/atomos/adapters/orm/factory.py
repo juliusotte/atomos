@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.engine import Engine
 from typing import Callable
 
-from atomos import config
+from atomos.core import config
 
 DEFAULT_ENGINE: Engine = create_engine(
     config.DB_URI,
