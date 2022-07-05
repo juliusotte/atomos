@@ -53,10 +53,35 @@ each other's existence. A broker summons a **star network topology**, reducing t
 supporting **scalability**, and **performance**. In the meantime, a broker introduces a highly system-critical component
 that needs to ensure high resilience in the dimensions of **security**, **performance**, **scalability**, etc.
 
+### API
+The **API (application programming interface)** defines **external entrypoints** to the system.
+
+In other architecture designs it is not uncommon that the API layer directly communicates with the handlers or even the
+domain and corresponding adapters (like the repository). This design creates a strong coupling between the API layer and
+the service/data layer.
+
+Following the event-driven approach, event messages define the input/output information to and from the system.
+
+Therefore, the API layer should only trigger the processing of events. The architecture overview diagram illustrates
+that the triggered events of the API layer are consumed by the *message bus* that route the messages to their
+corresponding handlers.
+
 ## Architecture Diagrams
 
 ### Overview
+The following graphic provides a simplified overview about the system, divided into application layers:
+
+| Application Layer | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| API Layer         | APIs act as external entrypoints to the system. As the architecture follows an event-driven approach, event messages define the actions that can be triggered by the API layer.  The triggered event messages are processed by the service layer (in particular the message bus), thus enabling a loose coupling between individual API wrappers and the system.  This approach enables to easily add, remove, or swap out API endpoints, as the only dependency that needs to be maintained is the connection to the service layer's message bus.                                                                                                                                    |
+| Service Layer     | The service layer is responsible to process triggered events and commands.  Events define the triggered actions of the API layer, while commands define the depending state changes of an event.  The events and commands are processed by the service layer's message bus, which monitors the execution of event/command messages and enforces data integrity by rolling back erroneous state changes.  The data integrity is enforced by the service layer's unit of work (UOW), which defines an abstraction around an atomic update to the system's data layer (e.g. repository adapter). The UOW can commit an atomic update in case of success, or rollback in case of failure. |
+| Adapters Layer    | The adapters layer contains interfaces ("adapters") to communicate with external resources outside the system (e.g. repository / database, message broker, (email) notifications, etc.).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+
 <img src='architecture.drawio.svg' alt='architecture' />
 
 ### (Package) Organization
+The following graphic illustrates the package organization of the framework.
+
+(*Please note that all shown packages start with the prefix `atomos.<package>`, so the package `core.domain` would be
+located at `atomos.core.domain`.*)
 <img src='architecture-organization.drawio.svg' alt='architecture-organization' />
