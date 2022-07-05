@@ -1,5 +1,5 @@
 <div align='center'>
-  <img src='docs/graphics/banner.svg' alt='atomos' width='75%' />
+  <img src='docs/assets/graphics/banner.svg' alt='atomos' width='75%' />
   <p><b>An event-driven microservice framework</b></p>
 </div>
 
