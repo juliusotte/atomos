@@ -3,7 +3,7 @@ import abc
 import contextlib
 from typing import TypeVar, Generic
 
-from atomos.adapters.repository import repository
+from atomos.core.adapters.repository import repository
 
 T = TypeVar('T', bound=repository.Repository)
 

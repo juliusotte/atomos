@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from atomos.core import config
-from atomos.adapters.notification import notification, template
+from atomos.core.adapters.notification import template, notification
 
 logger = logging.getLogger(__name__)
 

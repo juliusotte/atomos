@@ -1,8 +1,8 @@
 import abc
 from sqlalchemy.orm import Session
 
-from atomos.adapters.repository import repository
-from atomos.adapters.orm import factory
+from atomos.core.adapters.repository import repository
+from atomos.core.adapters.orm import factory
 
 
 class SQLAlchemyRepository(repository.Repository, abc.ABC):

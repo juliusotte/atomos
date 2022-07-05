@@ -4,7 +4,7 @@ from dataclasses import asdict
 from typing import Callable, Awaitable
 
 from atomos.core import config
-from atomos.adapters.messaging import message_broker
+from atomos.core.adapters.messaging import message_broker
 from atomos.domain.events import event
 
 

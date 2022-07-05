@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import TypeVar, Generic, Callable, Type
 
 from atomos.service.uow import unit_of_work
-from atomos.adapters.orm import factory
-from atomos.adapters.repository import sqlalchemy_repository
+from atomos.core.adapters import factory
+from atomos.core.adapters.repository import sqlalchemy_repository
 
 SessionFactory = Callable[..., Session]
 
