@@ -34,6 +34,7 @@ concrete repository implementations (like a SQLAlchemy repository implementation
 The framework provides an abstract base repository class that acts as an initial building block to develop custom
 repository aggregates:
 
+`atomos/core/adapters/repository/repository.py`
 ```python
 class Repository(abc.ABC):
     collected_entities: Set[model.Model]
@@ -105,6 +106,7 @@ class UserRepository(repository.Repository):
 
 The framework provides an abstract base SQLAlchemy repository that inherits the abstract base repository:
 
+`atomos/core/adapters/repository/sqlalchemy_repository.py`
 ```python
 class SQLAlchemyRepository(repository.Repository, abc.ABC):
     def __init__(self, session: Session = factory.DEFAULT_SESSION_FACTORY()):
