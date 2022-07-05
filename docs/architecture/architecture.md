@@ -1,3 +1,9 @@
+---
+tags:
+  - Framework
+  - Architecture
+---
+
 # Architecture
 
 ## Architecture Components
