@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 500">
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 2000 500">
   <path id="heading"
         fill="#0b6dc0" stroke="black" stroke-width="1"
         d="M 774.00,90.00
@@ -161,7 +162,7 @@
              601.45,342.88 618.44,344.72 631.00,344.13
              631.00,344.13 651.00,344.13 651.00,344.13
              651.00,344.13 671.00,342.00 671.00,342.00 Z" />
-  <path id="icon"
+  <path id="logo"
         fill="#0b6dc0" stroke="black" stroke-width="1"
         d="M 161.00,192.00
            C 161.00,192.00 162.28,180.00 162.28,180.00
