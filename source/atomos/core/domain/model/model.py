@@ -2,7 +2,7 @@ import abc
 from typing import Optional, List
 from uuid import uuid4
 
-from atomos.domain.events import event
+from atomos.core.domain.events import event
 
 
 class EventQueue(abc.ABC):

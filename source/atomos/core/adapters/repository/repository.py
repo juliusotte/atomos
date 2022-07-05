@@ -1,7 +1,7 @@
 import abc
 from typing import Set
 
-from atomos.domain.model import model
+from atomos.core.domain.model import model
 
 
 class Repository(abc.ABC):

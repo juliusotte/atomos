@@ -3,8 +3,8 @@ import logging
 from typing import Callable, Dict, List, Union, Type, Awaitable
 
 from atomos.service.uow import unit_of_work
-from atomos.domain.events import event
-from atomos.domain.commands import command
+from atomos.core.domain.events import event
+from atomos.core.domain.commands import command
 
 logger = logging.getLogger(__name__)
 

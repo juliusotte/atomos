@@ -2,7 +2,7 @@ import abc
 import logging
 from typing import Callable, Awaitable
 
-from atomos.domain.events import event
+from atomos.core.domain.events import event
 
 logger = logging.getLogger(__name__)
 

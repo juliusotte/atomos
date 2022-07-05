@@ -5,7 +5,7 @@ from typing import Callable, Awaitable
 
 from atomos.core import config
 from atomos.core.adapters.messaging import message_broker
-from atomos.domain.events import event
+from atomos.core.domain.events import event
 
 
 class RedisPubSubBroker(message_broker.MessageBroker):
