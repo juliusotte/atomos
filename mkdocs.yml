@@ -1,4 +1,4 @@
-site_name: atomos | Documentation
+site_name: atomos | Framework
 site_url: https://example.com
 
 repo_url: https://github.com/juliusotte/atomos
@@ -112,4 +112,6 @@ plugins:
 
 nav:
   - Index: index.md
-  - About: about.md
+  - Architecture: architecture/architecture.md
+  - Framework: framework/framework.md
+  - Quickstart: quickstart/quickstart.md
