@@ -3,8 +3,6 @@
   <p><b>An event-driven microservice framework</b></p>
 </div>
 
-## [Documentation](docs/documentation.md)
-### [Architecture](docs/architecture/architecture.md)
-### [Framework](docs/framework/framework.md)
+## [Documentation](docs/index.md)
 
 ## [License](LICENSE)
