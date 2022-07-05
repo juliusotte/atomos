@@ -208,7 +208,7 @@ SessionFactory = Callable[..., Session]
 T = TypeVar('T', bound=sqlalchemy_repository.SQLAlchemyRepository)
 
 
-class SQLAlchemyUnitOfWork(Generic[T], unit_of_work.UnitOfWork[T]):
+class SQLAlchemyUnitOfWork(Generic[T], unit_of_work.UnitOfWork[T], abc.ABC):
     def __init__(
         self,
         repository_factory: Type[sqlalchemy_repository.SQLAlchemyRepository],
@@ -233,7 +233,7 @@ class SQLAlchemyUnitOfWork(Generic[T], unit_of_work.UnitOfWork[T]):
         self.session.rollback()
 ```
 
-The generic design of the UOW bases enables to easily create custom UOW implementations: 
+The generic design of the UOW bases allows to easily create custom UOW implementations: 
 
 ```python
 class SQLAlchemyUserUnitOfWork(
