@@ -228,6 +228,67 @@ class SQLAlchemyUserRepository(
             self.session.delete(result)
 ```
 
+#### (Event) Messaging | Message Broker
+**Event messaging** describes an architectural approach in which the communication between system components happens by
+exchanging events. An event defines an immutable action that was triggered by a user/client or system component itself.
+
+A **message broker** is an intermediary message-oriented middleware that is responsible to receive, process, and deliver
+event messages. The messages are triggered by so-called producers/publisher, while the processed messages are delived to
+corresponding consumers/subscribers. Producers and consumers do not necessarily need to know about each other's
+existence. A message-oriented middleware (MOM), like a message broker, reduces the overall network complexity by
+creating a star topology, thus enabling a loose coupling between the producers and consumers. In contrast, a message
+broker introduces a highly system-critical component that needs to be designed and developed resilient in the dimensions
+of security, performance, and scalability.
+
+A message broker can additionally provide asynchronous communication between producers and consumers of messages by
+implementing a **message queue**. Erroneous message processes can be temporarily stored on a **dead-letter queue** in
+order to ensure delivery and data consistency.
+
+<img src='pub-sub.drawio.svg' alt='pub-sub' />
+
+<img src='pub-sub-broker.drawio.svg' alt='pub-sub-broker' />
+
+The framework provides an abstract message broker, as well as a concrete Redis **publish/subscribe-broker (pub/sub)**
+implementation.
+
+<img src='messaging.drawio.svg' alt='messaging' />
+
+`atomos/core/adapters/messaging/message_broker.py`
+```python
+class MessageBroker(abc.ABC):
+    @abc.abstractmethod
+    async def publish(self, channel: str, event: event.Event):
+        logger.info('publishing: channel=%s, events=%s', channel, event)
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def subscribe(self, channel: str):
+        logger.info('subscribing: channel=%s', channel)
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    async def process(self, handle: Callable[..., Awaitable]):
+        raise NotImplementedError
+```
+
+`atomos/core/adapters/messaging/redis_pub_sub_broker.py`
+```python
+class RedisPubSubBroker(message_broker.MessageBroker):
+    def __init__(self, host: str = config.REDIS_HOST, port: int = config.REDIS_PORT):
+        self._client = redis.Redis(host=host, port=port)
+        self._pub_sub = self._client.pubsub(ignore_subscribe_messages=True)
+
+    async def publish(self, channel: str, event: event.Event):
+        self._client.publish(channel, json.dumps(asdict(event)))
+
+    async def subscribe(self, channel: str):
+        self._pub_sub.subscribe(channel)
+
+    async def process(self, handle: Callable[..., Awaitable]):
+        for message in self._pub_sub.listen():
+            await handle(message)
+```
+
 ### Service Layer
 
 #### Unit of Work (UOW)
