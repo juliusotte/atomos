@@ -2,10 +2,13 @@
 .DS_Store
 
 # JetBrains IDE
-.idea
+.idea/
 
 # Python
-__pycache__
+__pycache__/
 
 # Exclude environment variables configuration file from source control to prevent unintended publishing
 .env
+
+# Exclude static documentation build
+site/
