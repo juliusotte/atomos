@@ -1,4 +1,4 @@
-# atomos
+<img src='docs/graphics/banner.svg' alt='atomos' />
 An event-driven microservice framework
 
 ## [Documentation](docs/documentation.md)
