@@ -85,3 +85,6 @@ The following graphic illustrates the package organization of the framework.
 (*Please note that all shown packages start with the prefix `atomos.<package>`, so the package `core.domain` would be
 located at `atomos.core.domain`.*)
 <img src='architecture-organization.drawio.svg' alt='architecture-organization' />
+
+## References
+- [Architecture Patterns with Python (H. J.W. Percival & B. Gregory) [web]](https://www.cosmicpython.com/book/preface.html)
