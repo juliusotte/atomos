@@ -1,5 +1,3 @@
-![GitHub Repo stars](https://img.shields.io/github/stars/juliusotte/atomos?style=social)
-![GitHub forks](https://img.shields.io/github/forks/juliusotte/atomos?style=social)
 ![GitHub](https://img.shields.io/github/license/juliusotte/atomos)
 ![GitHub issues](https://img.shields.io/github/issues/juliusotte/atomos)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed/juliusotte/atomos)
