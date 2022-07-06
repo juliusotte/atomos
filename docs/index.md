@@ -1,3 +1,5 @@
+![logo](assets/graphics/logo.svg){ align=left }
+
 # **atomos** | Framework
 
 **atomos** is an **event-driven microservice framework** that provides the fundamental **building blocks** to create
