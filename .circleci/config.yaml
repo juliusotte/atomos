@@ -1,0 +1,163 @@
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0
+
+jobs:
+
+  # Plan terraform provision (compare local & remote state)
+  plan-apply:
+    working_directory: ~/apply
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: terraform init & plan provision
+          command: |
+            cd infrastructure/
+            terraform init -input=false
+            terraform plan -out tfapply -var-file variables.tfvars
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  # Apply terraform provision (create deployment)
+  apply:
+    working_directory: ~/apply
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform provision
+          command: |
+            cd infrastructure/
+            terraform apply -auto-approve tfapply
+
+  # Plan terraform destruction (compare local & remote state)
+  plan-destroy:
+    working_directory: ~/destroy
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: terraform init & plan destruction
+          command: |
+            cd infrastructure/
+            terraform init -input=false
+            terraform plan -destroy -out tfdestroy -var-file variables.tfvars
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  # Apply terraform destruction (delete deployment)
+  destroy:
+    working_directory: ~/destroy
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destruction
+          command: |
+            cd infrastructure/
+            terraform apply -auto-approve tfdestroy
+
+  # Build app
+  build:
+    working_directory: ~/app
+    docker:
+      - image: circleci/python:latest
+    steps:
+      - checkout
+      - run:
+          name: install & build app
+          command: |
+            cd atomos/
+            pip install -r requirements.txt
+            mkdocs build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  # Plan deployment of built app to AWS S3
+  plan-deploy:
+    working_directory: ~/deploy
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: terraform init & output bucket name
+          command: |
+            cd infrastructure/
+            terraform init -input=false
+            terraform refresh
+            echo $(terraform output -raw aws_s3_bucket_name) >> aws_s3_bucket_name
+            echo $(terraform output -raw aws_region) >> aws_region
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  # Deploy built app to AWS S3
+  deploy:
+    working_directory: ~/deploy
+    executor: aws-cli/default
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          aws-region: AWS_REGION
+      - run:
+          name: sync app build to S3 bucket
+          command: |
+            export AWS_REGION=$(cat infrastructure/aws_region)
+            export BUCKET_NAME=$(cat infrastructure/aws_s3_bucket_name)
+            aws s3 sync atomos/site/ s3://$(echo $BUCKET_NAME) --endpoint-url http://s3.amazonaws.com --region $AWS_REGION
+
+workflows:
+  version: 2
+
+  deploy_app:
+    jobs:
+      #- plan-destroy
+      # enforce manual approval of deployment destruction:
+      #- hold-destroy:
+      #    type: approval
+      #    requires:
+      #      - plan-destroy
+      #- destroy:
+      #    requires:
+      #      #- hold-destroy
+      #      - plan-destroy
+      - plan-apply
+      #    requires:
+      #      - destroy
+      # enforce manual approval of deployment provision:
+      #- hold-apply:
+      #    type: approval
+      #    requires:
+      #      - plan-apply
+      - apply:
+          requires:
+            #- hold-apply
+            - plan-apply
+      - build:
+          requires:
+            - apply
+      - plan-deploy:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - plan-deploy
