@@ -122,6 +122,8 @@ jobs:
           command: |
             export AWS_REGION=$(cat infrastructure/aws_region)
             export BUCKET_NAME=$(cat infrastructure/aws_s3_bucket_name)
+            echo $AWS_REGION
+            echo $BUCKET_NAME
             aws s3 sync site/ s3://$(echo $BUCKET_NAME) --endpoint-url http://s3.amazonaws.com --region $AWS_REGION
 
 workflows:
