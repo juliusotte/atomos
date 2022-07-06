@@ -79,7 +79,6 @@ jobs:
       - run:
           name: install & build app
           command: |
-            cd atomos/
             pip install -r requirements.txt
             mkdocs build
       - persist_to_workspace:
