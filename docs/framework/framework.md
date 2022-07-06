@@ -13,7 +13,7 @@ tags:
 > particular functionality as part of a larger software platform to facilitate the development of software applications,
 > products and solutions. Software frameworks may include support programs, compilers, code libraries, toolsets, and
 > application programming interfaces (APIs) that bring together all the different components to enable development of a
-> project or system. (Wikipedia)
+> project or system. [^1]
 
 The objective of this event-driven framework is to provide a system of high-level abstraction components
 that act as building blocks to develop performant, secure, resilient, distributed, and scalable microservices.
@@ -24,7 +24,7 @@ components that act as the building blocks to create microservices.
 
 ## Domain
 > A sphere of knowledge, influence, or activity. The subject area to which the user applies a program is the domain of
-> the software. (Eric Evans)
+> the software. (Eric Evans) [^3]
 
 The domain contains **models**, **events**, and **commands** that in conjunction abstract the reality or fictional
 entities. **Domain engineering / modeling** refers to the process of abstracting real-world entities to digital
@@ -32,14 +32,13 @@ domain entities.
 
 The framework provides abstract bases for custom models, events, and commands:
 
-`atomos/core/domain/events/event.py`
-```python
+```python linenums="1" title="atomos/core/domain/events/event.py"
 @dataclass
 class Event:
     pass
 ```
 
-```python
+```python linenums="1"
 @dataclass
 class UserCreated(event.Event):
     username: Optional[str]
@@ -47,14 +46,13 @@ class UserCreated(event.Event):
     roles: Optional[List[role.Role]] = field(default_factory=lambda: [])
 ```
 
-`atomos/core/domain/commands/command.py`
-```python
+```python linenums="1" title="atomos/core/domain/commands/command.py"
 @dataclass
 class Command:
     pass
 ```
 
-```python
+```python linenums="1"
 @dataclass
 class CreateUser(command.Command):
     username: str
@@ -63,8 +61,7 @@ class CreateUser(command.Command):
     roles: Optional[List[role.Role]] = field(default_factory=lambda: [])
 ```
 
-`atomos/core/domain/model/model.py`
-```python
+```python linenums="1" title="atomos/core/domain/model/model.py"
 class EventQueue(abc.ABC):
     events: Optional[List[event.Event]] = []
 
@@ -76,7 +73,7 @@ The `Model` base inherits the abstract base class `EventQueue`, which optionally
 the service layer's message bus (`atomos/core/service/bus/message_bus.py`) to dynamically monitor newly triggered events
 that relate to the model.
 
-```python
+```python linenums="1"
 @dataclass
 class User(model.Model):
     username: str
@@ -97,7 +94,7 @@ class User(model.Model):
 #### Repository
 > Repositories are classes or components that encapsulate the logic required to access data sources. They centralize
 > common data access functionality, providing better maintainability and decoupling the infrastructure or technology
-> used to access databases from the domain model layer. (Microsoft)
+> used to access databases from the domain model layer. (Microsoft) [^2]
 
 Every repository defines a domain aggregate. The events and commands that are received by the service layer's message
 bus will be handled by a unit of work (UOW), which defines an atomic update to the data persistence layer, in particular
@@ -106,13 +103,15 @@ the repository.
 Thus, an abstract UOW depends on an abstract repository. Concrete UOW implementations (like a SQLAlchemy UOW) depend on
 concrete repository implementations (like a SQLAlchemy repository implementation):
 
-<img src='uow-repository-communication.drawio.svg' alt='uow-repository-communication' />
+<figure markdown>
+  ![UOW & repository communication](uow-repository-communication.drawio.svg)
+  <figcaption>Coomunication between the UOW (service layer) and repository (adapters layer)</figcaption>
+</figure>
 
 The framework provides an abstract base repository class that acts as an initial building block to develop custom
 repository aggregates:
 
-`atomos/core/adapters/repository/repository.py`
-```python
+```python linenums="1" title="atomos/core/adapters/repository/repository.py"
 class Repository(abc.ABC):
     collected_entities: Set[model.Model]
 
@@ -123,7 +122,7 @@ class Repository(abc.ABC):
 A custom repository aggregate could then be defined as an abstract repository itself, depending on the abstract base
 repository:
 
-```python
+```python linenums="1"
 class UserRepository(repository.Repository):
     def __init__(self):
         super().__init__()
@@ -183,8 +182,7 @@ class UserRepository(repository.Repository):
 
 The framework provides an abstract base SQLAlchemy repository that inherits the abstract base repository:
 
-`atomos/core/adapters/repository/sqlalchemy_repository.py`
-```python
+```python linenums="1" title="atomos/core/adapters/repository/sqlalchemy_repository.py"
 class SQLAlchemyRepository(repository.Repository, abc.ABC):
     def __init__(self, session: Session = factory.DEFAULT_SESSION_FACTORY()):
         super().__init__()
@@ -193,7 +191,7 @@ class SQLAlchemyRepository(repository.Repository, abc.ABC):
 
 The SQLAlchemy repository base can then be applied to create custom SQLAlchemy repository implementations:
 
-```python
+```python linenums="1"
 class SQLAlchemyUserRepository(
     sqlalchemy_repository.SQLAlchemyRepository,
     repository.IdentityRepository
@@ -250,17 +248,25 @@ A message broker can additionally provide asynchronous communication between pro
 implementing a **message queue**. Erroneous message processes can be temporarily stored on a **dead-letter queue** in
 order to ensure delivery and data consistency.
 
-<img src='pub-sub.drawio.svg' alt='pub-sub' />
+<figure markdown>
+  ![pub/sub](pub-sub.drawio.svg)
+  <figcaption>Middleware storage of messages and dedicated topics</figcaption>
+</figure>
 
-<img src='pub-sub-broker.drawio.svg' alt='pub-sub-broker' />
+<figure markdown>
+  ![pub/sub broker](pub-sub-broker.drawio.svg)
+  <figcaption>Architectural design of a message broker (including topic queueing)</figcaption>
+</figure>
 
 The framework provides an abstract message broker, as well as a concrete Redis **publish/subscribe-broker (pub/sub)**
 implementation.
 
-<img src='messaging.drawio.svg' alt='messaging' />
+<figure markdown>
+  ![messaging](messaging.drawio.svg)
+  <figcaption>Communication between the service layer (handlers, message bus) and the adapters layer (message broker)</figcaption>
+</figure>
 
-`atomos/core/adapters/messaging/message_broker.py`
-```python
+```python linenums="1" title="atomos/core/adapters/messaging/message_broker.py"
 class MessageBroker(abc.ABC):
     @abc.abstractmethod
     async def publish(self, channel: str, event: event.Event):
@@ -277,8 +283,7 @@ class MessageBroker(abc.ABC):
         raise NotImplementedError
 ```
 
-`atomos/core/adapters/messaging/redis_pub_sub_broker.py`
-```python
+```python linenums="1" title="atomos/core/adapters/messaging/redis_pub_sub_broker.py"
 class RedisPubSubBroker(message_broker.MessageBroker):
     def __init__(self, host: str = config.REDIS_HOST, port: int = config.REDIS_PORT):
         self._client = redis.Redis(host=host, port=port)
@@ -305,8 +310,7 @@ changes, comitting the updates in case of success, or rolling back in case of fa
 The framework provides generic abstractions for the UOW that act as the building blocks to create custom UOW
 implementations:
 
-`atomos/core/service/uow/unit_of_work.py`
-```python
+```python linenums="1" title="atomos/core/service/uow/unit_of_work.py"
 T = TypeVar('T', bound=repository.Repository)
 
 class UnitOfWork(Generic[T], contextlib.AbstractAsyncContextManager, abc.ABC):
@@ -338,8 +342,7 @@ class UnitOfWork(Generic[T], contextlib.AbstractAsyncContextManager, abc.ABC):
         raise NotImplementedError
 ```
 
-`atomos/core/service/uow/sqlalchemy_unit_of_work.py`
-```python
+```python linenums="1" title="atomos/core/service/uow/sqlalchemy_unit_of_work.py"
 SessionFactory = Callable[..., Session]
 
 T = TypeVar('T', bound=sqlalchemy_repository.SQLAlchemyRepository)
@@ -372,16 +375,19 @@ class SQLAlchemyUnitOfWork(Generic[T], unit_of_work.UnitOfWork[T], abc.ABC):
 
 The generic design of the UOW bases allows to easily create custom UOW implementations: 
 
-```python
+```python linenums="1" hl_lines="2 5"
 class SQLAlchemyUserUnitOfWork(
-    sqlalchemy_unit_of_work.SQLAlchemyUnitOfWork[sqlalchemy_repository.SQLAlchemyUserRepository],
+    sqlalchemy_unit_of_work.SQLAlchemyUnitOfWork[sqlalchemy_repository.SQLAlchemyUserRepository], # (1)
 ):
     def __init__(self, session_factory: sqlalchemy_unit_of_work.SessionFactory = factory.DEFAULT_SESSION_FACTORY):
         super().__init__(sqlalchemy_repository.SQLAlchemyUserRepository, session_factory)
 ```
 
+1. The `SQLAlchemyUserUnitOfWork` inherits the generic SQLAlchemy UOW base by providing the generic 
+   `SQLAlchemyUserRepository` type that implements the `Repository` interface.
+
 
 ## References
-- [Software framework (Wikipedia)](https://en.wikipedia.org/wiki/Software_framework)
-- [Design the infrastructure persistence layer (Microsoft)](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design)
-- [Domain (software engineering) (Wikipedia)](https://en.wikipedia.org/wiki/Domain_(software_engineering))
+[^1]: [Software framework (Wikipedia)](https://en.wikipedia.org/wiki/Software_framework)
+[^2]: [Design the infrastructure persistence layer (Microsoft)](https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design)
+[^3]: [Domain (software engineering) (Wikipedia)](https://en.wikipedia.org/wiki/Domain_(software_engineering))

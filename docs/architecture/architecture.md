@@ -83,14 +83,21 @@ The following graphic provides a simplified overview about the system, divided i
 | Service Layer     | The service layer is responsible to process triggered events and commands.  Events define the triggered actions of the API layer, while commands define the depending state changes of an event.  The events and commands are processed by the service layer's message bus, which monitors the execution of event/command messages and enforces data integrity by rolling back erroneous state changes.  The data integrity is enforced by the service layer's unit of work (UOW), which defines an abstraction around an atomic update to the system's data layer (e.g. repository adapter). The UOW can commit an atomic update in case of success, or rollback in case of failure. |
 | Adapters Layer    | The adapters layer contains interfaces ("adapters") to communicate with external resources outside the system (e.g. repository / database, message broker, (email) notifications, etc.).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
-<img src='architecture.drawio.svg' alt='architecture' />
+<figure markdown>
+  ![architecture](architecture.drawio.svg)
+  <figcaption>Layered system architecture</figcaption>
+</figure>
 
 ### (Package) Organization
 The following graphic illustrates the package organization of the framework.
 
 (*Please note that all shown packages start with the prefix `atomos.<package>`, so the package `core.domain` would be
 located at `atomos.core.domain`.*)
-<img src='architecture-organization.drawio.svg' alt='architecture-organization' />
+
+<figure markdown>
+  ![architecture organization](architecture-organization.drawio.svg)
+  <figcaption>Organization of the layered system architecture into sub-/packages</figcaption>
+</figure>
 
 ## References
-- [Architecture Patterns with Python (H. J.W. Percival & B. Gregory) [web]](https://www.cosmicpython.com/book/preface.html)
+[^1]: [Architecture Patterns with Python (H. J.W. Percival & B. Gregory) [web]](https://www.cosmicpython.com/book/preface.html)
