@@ -10,5 +10,7 @@ __pycache__/
 # Exclude environment variables configuration file from source control to prevent unintended publishing
 .env
 
-# Exclude static documentation build
-site/
+# Terraform IAC
+.terraform
+*.tfstate
+*.tfstate.*
