@@ -12,16 +12,6 @@ resource "aws_s3_bucket" "s3_bucket" {
   }
 }
 
-resource "aws_s3_bucket" "s3_bucket" {
-  bucket = var.aws_s3_bucket_name
-  acl    = "public-read"
-  tags   = var.resource_tags
-  website {
-    index_document = "index.html"
-    error_document = "index.html"
-  }
-}
-
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = aws_s3_bucket.s3_bucket.bucket
   policy = data.aws_iam_policy_document.s3_bucket_policy_document.json
