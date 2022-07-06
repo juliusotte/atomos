@@ -122,7 +122,7 @@ jobs:
           command: |
             export AWS_REGION=$(cat infrastructure/aws_region)
             export BUCKET_NAME=$(cat infrastructure/aws_s3_bucket_name)
-            aws s3 sync atomos/site/ s3://$(echo $BUCKET_NAME) --endpoint-url http://s3.amazonaws.com --region $AWS_REGION
+            aws s3 sync site/ s3://$(echo $BUCKET_NAME) --endpoint-url http://s3.amazonaws.com --region $AWS_REGION
 
 workflows:
   version: 2
