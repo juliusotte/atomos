@@ -139,7 +139,7 @@ workflows:
       #    requires:
       #      #- hold-destroy
       #      - plan-destroy
-      - plan-apply
+      #- plan-apply:
       #    requires:
       #      - destroy
       # enforce manual approval of deployment provision:
@@ -147,10 +147,10 @@ workflows:
       #    type: approval
       #    requires:
       #      - plan-apply
-      - apply:
-          requires:
-            #- hold-apply
-            - plan-apply
+      #- apply:
+      #    requires:
+      #      #- hold-apply
+      #      - plan-apply
       - build:
           requires:
             - apply
