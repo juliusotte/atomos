@@ -151,9 +151,9 @@ workflows:
       #    requires:
       #      #- hold-apply
       #      - plan-apply
-      - build:
-          requires:
-            - apply
+      - build
+      #    requires:
+      #      - apply
       - plan-deploy:
           requires:
             - build
