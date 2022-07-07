@@ -16,10 +16,10 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-central-1"
+  region = var.region
 }
 
 provider "aws" {
   alias  = "acm_provider"
-  region = "eu-central-1"
+  region = var.region
 }
