@@ -1,0 +1,182 @@
+syntax = 'proto3';
+
+package identity;
+
+service Identity {
+  rpc CreatePermission(CreatePermissionRequest) returns (CreatePermissionResponse) {};
+  rpc GetPermission(GetPermissionRequest) returns (GetPermissionResponse) {};
+  rpc QueryPermissions(QueryPermissionsRequest) returns (QueryPermissionsResponse) {};
+  rpc UpdatePermission(UpdatePermissionRequest) returns (UpdatePermissionResponse) {};
+  rpc DeletePermission(DeletePermissionRequest) returns (DeletePermissionResponse) {};
+
+  rpc CreateRole(CreateRoleRequest) returns (CreateRoleResponse) {};
+  rpc GetRole(GetRoleRequest) returns (GetRoleResponse) {};
+  rpc QueryRoles(QueryRolesRequest) returns (QueryRolesResponse) {};
+  rpc UpdateRole(UpdateRoleRequest) returns (UpdateRoleResponse) {};
+  rpc DeleteRole(DeleteRoleRequest) returns (DeleteRoleResponse) {};
+
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {};
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {};
+  rpc QueryUsers(QueryUsersRequest) returns (QueryUsersResponse) {};
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {};
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {};
+
+  rpc CreateAPIKey(CreateAPIKeyRequest) returns (CreateAPIKeyResponse) {};
+  rpc GetAPIKey(GetAPIKeyRequest) returns (GetAPIKeyResponse) {};
+  rpc UpdateAPIKey(UpdateAPIKeyRequest) returns (UpdateAPIKeyResponse) {};
+  rpc DeleteAPIKey(DeleteAPIKeyRequest) returns (DeleteAPIKeyResponse) {};
+}
+
+message Permission {
+  string permission = 1;
+}
+
+message CreatePermissionRequest {
+  string permission = 1;
+}
+
+message GetPermissionRequest {
+  string permission = 1;
+}
+
+message QueryPermissionsRequest {}
+
+message UpdatePermissionRequest {
+  Permission query = 1;
+  Permission update = 2;
+}
+
+message DeletePermissionRequest {
+  string permission = 1;
+}
+
+message CreatePermissionResponse {}
+
+message GetPermissionResponse {
+  Permission permission = 1;
+}
+
+message QueryPermissionsResponse {
+  repeated Permission permissions = 1;
+}
+
+message UpdatePermissionResponse {}
+
+message DeletePermissionResponse {}
+
+message Role {
+  string role = 1;
+  repeated Permission permissions = 2;
+}
+
+message CreateRoleRequest {
+  string role = 1;
+  repeated Permission permissions = 2;
+}
+
+message GetRoleRequest {
+  string role = 1;
+}
+
+message QueryRolesRequest {}
+
+message UpdateRoleRequest {
+  Role query = 1;
+  Role update = 2;
+}
+
+message DeleteRoleRequest {
+  string role = 1;
+}
+
+message CreateRoleResponse {}
+
+message GetRoleResponse {
+  Role role = 1;
+}
+
+message QueryRolesResponse {
+  repeated Role roles = 1;
+}
+
+message UpdateRoleResponse {}
+
+message DeleteRoleResponse {}
+
+message User {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  repeated Role roles = 4;
+}
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+  string email = 3;
+  repeated Role roles = 4;
+}
+
+message GetUserRequest {
+  optional string username = 1;
+  optional string email = 2;
+}
+
+message QueryUsersRequest {}
+
+message UpdateUserRequest {
+  User query = 1;
+  User update = 2;
+}
+
+message DeleteUserRequest {
+  optional string username = 1;
+  optional string email = 2;
+}
+
+message CreateUserResponse {}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+message QueryUsersResponse {
+  repeated User users = 1;
+}
+
+message UpdateUserResponse {}
+
+message DeleteUserResponse {}
+
+message APIKey {
+  string uuid = 1;
+  optional User user = 2;
+}
+
+message CreateAPIKeyRequest {
+  User user = 1;
+}
+
+message GetAPIKeyRequest {
+  optional APIKey key = 1;
+  optional User user = 2;
+}
+
+message UpdateAPIKeyRequest {
+  APIKey query = 1;
+  APIKey update = 2;
+}
+
+message DeleteAPIKeyRequest {
+  APIKey key = 1;
+}
+
+message CreateAPIKeyResponse {}
+
+message GetAPIKeyResponse {
+  APIKey key = 1;
+}
+
+message UpdateAPIKeyResponse {}
+
+message DeleteAPIKeyResponse {}
