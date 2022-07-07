@@ -1,6 +1,6 @@
 from typing import Type, Dict, List, Callable, Union, Awaitable
 
-from algoid.core.domain.events import event
+from atomos.core.domain.events import event
 
 from identity.domain.events import (
     permission_events,
@@ -9,7 +9,7 @@ from identity.domain.events import (
     api_key_events,
 )
 
-from algoid.core.domain.commands import command
+from atomos.core.domain.commands import command
 
 from identity.domain.commands import (
     permission_commands,
